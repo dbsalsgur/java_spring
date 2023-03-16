@@ -1,0 +1,3 @@
+1. 스프링 관련 설정
+- pom.xml에 설정을 해야한다.
+- web.xml과 web-inf예하의 spring 폴더를 삭제해야한다
