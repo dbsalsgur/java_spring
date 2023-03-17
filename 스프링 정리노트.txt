@@ -1,3 +1,36 @@
 1. 스프링 관련 설정
-- pom.xml에 설정을 해야한다.
-- web.xml과 web-inf예하의 spring 폴더를 삭제해야한다
+- 텍스트 참고
+
+2. Component어노테이션
+- 의존성 주입을 위한 어노테이션
+- 스프링은 왠만한 것들을 어노테이션으로 설정한다
+
+3. log4j 어노테이션
+- log관련 전반적 기능을 수행할 수 있다
+
+4. ContextConfiguration 테스트 관련 어노테이션
+- 스프링이 실행되면서 어떤 설정정보를 읽어들여야하는지 명시
+
+5. setter 어노테이션
+- data어노테이션만으로도 getter, setter는 만들어지지만, setter의 디테일한 설정을 위해 사용한다.
+
+6. autowired 어노테이션 
+- 객체를 스프링에서 자동으로 설정하여 주입한다
+
+7. allargsconstructor 어노테이션
+- 주어진 프로퍼티를 모두 사용한 매개변수가 있는 생성자를 자동을 생성한다.
+
+8. RequiredArgsConstructor 어노테이션
+- nonnull어노테이션과 같이 사용되며, nonnull이 붙은 프로퍼티가 포함된 생성자를 생성한다.
+
+9. spring과 oracle연동하는 방법
+- 프로젝트의 buildpath에 ojdbc6.jar를 add external jar를 통해 추가한다.
+- properties의 deploy assembly에서도 해야한다.
+- 나머지는 java에서 연동하는 방법이랑 유사하다. 
+- 테스트코드 참조. 텍스트 78~참조
+
+10. 라이브러리를 사용하고 싶다면, pom.xml의 dependency에 추가해준다
+
+11. sql이 한 프로젝트에 굉장히 많아지기 떄문에 xml파일을 사용해서 쿼리문을 모아둘 수 있다.
+
+
