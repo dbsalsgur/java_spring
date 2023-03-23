@@ -33,4 +33,8 @@
 
 11. sql이 한 프로젝트에 굉장히 많아지기 떄문에 xml파일을 사용해서 쿼리문을 모아둘 수 있다.
 
-
+12. Spring MVC의 기본 구조(텍스트 122p)
+DispatcherServlet ↔ HandlerMapping
+DispatcherServlet ↔ HandlerAdapter ↔ Controller
+DispatcherServlet ↔ ViewResolver
+DispatcherServlet ↔ View → JSP 및 기타 
