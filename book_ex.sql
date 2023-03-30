@@ -16,3 +16,5 @@ insert into tbl_board (bno, title, content, writer) values (seq_board.nextval,
 
 insert into tbl_board (bno, title, content, writer) values (seq_board.nextval, 
 '테스트 제목', '테스트 내용', 'user01');
+
+select * from tbl_board where bno > 0;
