@@ -21,3 +21,14 @@ select * from tbl_board where bno > 0;
 
 select * from tbl_board;
 
+select /*+INDEX_DESC(tbl_board pk_board) */
+rownum rn, bno, title, content
+from tbl_board where bno > 0;
+
+select bno, title, content from (
+    select /*+INDEX_DESC(tbl_board pk_board) */
+    rownum rn, bno, title, content
+    from tbl_board where rownum <= 20
+) 
+where rn > 10;
+
