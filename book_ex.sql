@@ -17,9 +17,10 @@ insert into tbl_board (bno, title, content, writer) values (seq_board.nextval,
 insert into tbl_board (bno, title, content, writer) values (seq_board.nextval, 
 '테스트 제목', '테스트 내용', 'user01');
 
-select * from tbl_board where bno > 0;
+insert into tbl_board (bno, title, content, writer) (select seq_board.nextval, 
+title, content, writer from tbl_board);
 
-select * from tbl_board;
+select * from tbl_board where bno > 0;
 
 select /*+INDEX_DESC(tbl_board pk_board) */
 rownum rn, bno, title, content
@@ -32,3 +33,14 @@ select bno, title, content from (
 ) 
 where rn > 10;
 
+select * 
+from
+    (
+    select /*+INDEX_DESC(tbl_board pk_board)*/
+        rownum rn, bno, title, content, writer, regdate, updatedate
+    from
+        tbl_board
+    where
+        (title like '%Test%' or content like '%Test%') and rownum <= 20
+    )
+where rn > 10;
