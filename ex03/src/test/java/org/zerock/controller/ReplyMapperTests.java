@@ -1,11 +1,14 @@
 package org.zerock.controller;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.zerock.domain.Criteria;
 import org.zerock.domain.ReplyVO;
 import org.zerock.mapper.ReplyMapper;
 
@@ -57,15 +60,22 @@ public class ReplyMapperTests {
 //		Long targetRno = 1L;
 //		mapper.delete(targetRno);
 //	}
+//	
+//	@Test
+//	public void testUpdate() {
+//		Long targetRno = 10L;
+//		ReplyVO vo = mapper.read(targetRno);
+//		vo.setReply("Update Reply ");
+//		int count = mapper.update(vo);
+//		log.info("UPDATE COUNT: "+count);
+//	}
 	
 	@Test
-	public void testUpdate() {
-		Long targetRno = 10L;
-		ReplyVO vo = mapper.read(targetRno);
-		vo.setReply("Update Reply ");
-		int count = mapper.update(vo);
-		log.info("UPDATE COUNT: "+count);
+	public void testList() {
+		Criteria cri = new Criteria();
+		
+		List<ReplyVO> replies = mapper.getListWithPaging(cri, bnoArr[0]);
+		replies.forEach(reply -> log.info(reply));
 	}
-	
 	
 }

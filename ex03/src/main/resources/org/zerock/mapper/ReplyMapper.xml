@@ -14,6 +14,13 @@ PUBLIC "//mybatis.org//DTD Mapper 3.0//EN"
 		select * from tbl_reply where rno = #{rno}
 	</select>
 	
+	<select id="getListWithPaging" resultType="org.zerock.domain.ReplyVO">
+		select rno, bno, reply, replyer, replyDate, updatedate
+		from tbl_reply
+		where bno = #{bno}
+		order by rno asc
+	</select>
+	
 	<delete id="delete">
 		delete from tbl_reply where rno = #{rno}
 	</delete>
