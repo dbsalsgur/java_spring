@@ -62,3 +62,19 @@ alter table tbl_reply add constraint fk_reply_board foreign key (bno)
 references tbl_board (bno);
 
 select * from tbl_reply order by rno desc;
+
+create index idx_reply on tbl_reply (bno desc, rno asc);
+
+select /*INDEX(tbl_reply idx_reply) */
+    rownum rn, bno, reply, replyer, replyDate, updatedate
+from tbl_reply
+where bno = 10
+and rno > 0;
+
+
+/*ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ*/
+
+create table tbl_sample1( col1 varchar2(500));
+
+
+create table tbl_sample2( col2 varchar2(50));
