@@ -7,7 +7,7 @@
 
 <div class="row">
 	<div class="col-lg-12">
-		<h1 class="page-header">Board Register</h1>
+		<h1 class="page-header">Board Read</h1>
 	</div>
 	<!-- /.col-lg-12 -->
 </div>
@@ -77,7 +77,84 @@
 </div>
 <!-- /.row -->
 
+<div class='bigPictureWrapper'>
+	<div class='bigPicture'>
+	</div>
+</div>
 
+<style>
+.uploadResult {
+ 	width:100%;
+ 	background-color: gray;
+}
+
+.uploadResult ul {
+	display:flex;
+	flex-flow: row;
+	justify-content: center;
+	align-items: center;
+}
+
+.uploadResult ul li{
+ 	list-style: none;
+ 	padding: 10px;
+ 	align-content: center;
+ 	text-align: center;
+}
+
+.uploadResult ul li img{
+ 	width: 100px;
+}
+
+.uploadResult ul li span {
+ 	color:white;
+}
+
+.bigPictureWrapper {
+	position: absolute;
+	display: none;
+	justify-content: center;
+	align-items: center;
+	top:0%
+	width:100%
+	height:100%
+	background-color: gray;
+	z-index: 100;
+	background:rgba(255, 255, 255, 0.5);
+}
+.bigPicture {
+	position: relative;
+	display:flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.bigPicture img {
+	width:600px;
+}
+
+</style>
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+
+			<div class="panel-heading">Files</div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+			
+				<div class='uploadResult'>
+					<ul>
+					</ul>
+				</div>
+			</div>
+			<!-- end panel-body -->
+		</div>
+		<!-- end panel-body -->
+	</div>
+	<!-- end panel -->
+</div>
+<!-- /.row -->
 <div class='row'>
 
 	<div class="col-lg-12">
@@ -158,248 +235,284 @@
 
 <script type="text/javascript" src="/resources/js/reply.js"></script>
 
+<script>
+$(document).ready(function() {
+	(function() {
+		var bno = '<c:out value="${board.bno}"/>';
+		
+		$.getJSON("/board/getAttachList", {bno: bno}, function(arr){
+			
+			console.log(arr);
+			
+			var str = "";
+			
+			$(arr).each(function(i, attach) {
+				
+				//image type
+				if (attach.fileType) {
+					var fileCallPath = encodeURIComponent(attach.uploadPath + "/s_" + attach.uuid + "_" + attach.fileName);
+					str += "<li data-path='"+attach.uploadPath+"'";
+					str += "data-uuid='"+attach.uuid+"' data-filename='"+attach.fileName+"' data-type='"+attach.fileType+"'>";
+					str += "<div>";
+					str += "<img src='/display?fileName=" + fileCallPath + "'>";
+					str += "</div>";
+					str += "</li>";
+				} else {
+
+					str += "<li data-path='"+attach.uploadPath+"'";
+					str += "data-uuid='"+attach.uuid+"' data-filename='"+attach.fileName+"' data-type='"+attach.fileType+"'>";
+					str += "<div>";
+					str += "<span> " + attach.fileName + "</span><br/>";
+					str += "<img src='/resources/img/attach.png'>";
+					str += "</div>";
+					str += "</li>";
+				}
+				
+				$(".uploadResult ul").html(str);
+				
+			});
+		
+		}); //end getjson
+		
+	})(); //end function
+	
+});
+</script>
+
 <script type="text/javascript">
-	$(document)
-			.ready(
-					function() {
-						var bnoValue = '<c:out value="${board.bno}"/>';
-						var replyUL = $(".chat");
+$(document).ready(function() {
+	var bnoValue = '<c:out value="${board.bno}"/>';
+	var replyUL = $(".chat");
+	
+	showList(1);
+	
+	function showList(page) {
+	
+		console.log("show list " + page);
+	
+		replyService.getList(
+			{
+				bno : bnoValue,
+				page : page || 1
+			},
+		function(replyCnt, list) {
 
-						showList(1);
+			console.log("replyCnt: "
+					+ replyCnt);
+			console.log("list: " + list);
+			console.log(list);
 
-						function showList(page) {
+			if (page == -1) {
+				pageNum = Math
+						.ceil(replyCnt / 10.0);
+				showList(pageNum);
+				return;
+			}
 
-							console.log("show list " + page);
+			var str = "";
 
-							replyService
-									.getList(
-											{
-												bno : bnoValue,
-												page : page || 1
-											},
-											function(replyCnt, list) {
+			if (list == null
+					|| list.length == 0) {
+				return;
+			}
 
-												console.log("replyCnt: "
-														+ replyCnt);
-												console.log("list: " + list);
-												console.log(list);
+			for (var i = 0, len = list.length || 0; i < len; i++) {
+				str += "<li class='left clearfix' data-rno='"+list[i].rno+"'>";
+				str += "  <div><div class='header'><strong class='primary-font'>[" + list[i].rno + "] " + list[i].replyer + "</strong>";
+				str += "    <small class='pull-right text-muted'>" + replyService.displayTime(list[i].replyDate) + "</small></div>";
+				str += "    <p>" + list[i].reply + "</p></div></li>";
+			}
 
-												if (page == -1) {
-													pageNum = Math
-															.ceil(replyCnt / 10.0);
-													showList(pageNum);
-													return;
-												}
+			replyUL.html(str);
 
-												var str = "";
+			showReplyPage(replyCnt);
 
-												if (list == null
-														|| list.length == 0) {
-													return;
-												}
+		}); //end function
 
-												for (var i = 0, len = list.length || 0; i < len; i++) {
-													str += "<li class='left clearfix' data-rno='"+list[i].rno+"'>";
-													str += "  <div><div class='header'><strong class='primary-font'>["
-															+ list[i].rno
-															+ "] "
-															+ list[i].replyer
-															+ "</strong>";
-													str += "    <small class='pull-right text-muted'>"
-															+ replyService
-																	.displayTime(list[i].replyDate)
-															+ "</small></div>";
-													str += "    <p>"
-															+ list[i].reply
-															+ "</p></div></li>";
-												}
+	}
 
-												replyUL.html(str);
+	var pageNum = 1;
+	var replyPageFooter = $(".panel-footer");
 
-												showReplyPage(replyCnt);
+	function showReplyPage(replyCnt) {
 
-											});//end function
+		var endNum = Math.ceil(pageNum / 10.0) * 10;
+		var startNum = endNum - 9;
 
-						}
+		var prev = startNum != 1;
+		var next = false;
 
-						var pageNum = 1;
-						var replyPageFooter = $(".panel-footer");
+		if (endNum * 10 >= replyCnt) {
+			endNum = Math.ceil(replyCnt / 10.0);
+		}
 
-						function showReplyPage(replyCnt) {
+		if (endNum * 10 < replyCnt) {
+			next = true;
+		}
 
-							var endNum = Math.ceil(pageNum / 10.0) * 10;
-							var startNum = endNum - 9;
+		var str = "<ul class='pagination pull-right'>";
 
-							var prev = startNum != 1;
-							var next = false;
+		if (prev) {
+			str += "<li class='page-item'><a class='page-link' href='"
+					+ (startNum - 1)
+					+ "'>Previous</a></li>";
+		}
 
-							if (endNum * 10 >= replyCnt) {
-								endNum = Math.ceil(replyCnt / 10.0);
-							}
+		for (var i = startNum; i <= endNum; i++) {
 
-							if (endNum * 10 < replyCnt) {
-								next = true;
-							}
+			var active = pageNum == i ? "active" : "";
 
-							var str = "<ul class='pagination pull-right'>";
+			str += "<li class='page-item "+active+" '><a class='page-link' href='"+i+"'>"
+					+ i + "</a></li>";
+		}
 
-							if (prev) {
-								str += "<li class='page-item'><a class='page-link' href='"
-										+ (startNum - 1)
-										+ "'>Previous</a></li>";
-							}
+		if (next) {
+			str += "<li class='page-item'><a class='page-link' href='"
+					+ (endNum + 1) + "'>Next</a></li>";
+		}
 
-							for (var i = startNum; i <= endNum; i++) {
+		str += "</ul></div>";
 
-								var active = pageNum == i ? "active" : "";
+		console.log(str);
 
-								str += "<li class='page-item "+active+" '><a class='page-link' href='"+i+"'>"
-										+ i + "</a></li>";
-							}
+		replyPageFooter.html(str);
+	}
 
-							if (next) {
-								str += "<li class='page-item'><a class='page-link' href='"
-										+ (endNum + 1) + "'>Next</a></li>";
-							}
+	replyPageFooter.on("click", "li a", function(e) {
+		e.preventDefault();
+		console.log("page click");
 
-							str += "</ul></div>";
+		var targetPageNum = $(this).attr("href");
 
-							console.log(str);
+		console.log("targetPageNum: " + targetPageNum);
 
-							replyPageFooter.html(str);
-						}
+		pageNum = targetPageNum;
 
-						replyPageFooter.on("click", "li a", function(e) {
-							e.preventDefault();
-							console.log("page click");
+		showList(pageNum);
+	});
 
-							var targetPageNum = $(this).attr("href");
+	var modal = $(".modal");
+	var modalInputReply = modal.find("input[name='reply']");
+	var modalInputReplyer = modal
+			.find("input[name='replyer']");
+	var modalInputReplyDate = modal
+			.find("input[name='replyDate']");
 
-							console.log("targetPageNum: " + targetPageNum);
+	var modalModBtn = $("#modalModBtn");
+	var modalRemoveBtn = $("#modalRemoveBtn");
+	var modalRegisterBtn = $("#modalRegisterBtn");
 
-							pageNum = targetPageNum;
+	$("#addReplyBtn").on("click", function(e) {
 
-							showList(pageNum);
-						});
+		modal.find("input").val("");
+		modalInputReplyDate.closest("div").hide();
+		modal.find("button[id !='modalCloseBtn']").hide();
 
-						var modal = $(".modal");
-						var modalInputReply = modal.find("input[name='reply']");
-						var modalInputReplyer = modal
-								.find("input[name='replyer']");
-						var modalInputReplyDate = modal
-								.find("input[name='replyDate']");
+		modalRegisterBtn.show();
 
-						var modalModBtn = $("#modalModBtn");
-						var modalRemoveBtn = $("#modalRemoveBtn");
-						var modalRegisterBtn = $("#modalRegisterBtn");
+		$(".modal").modal("show");
 
-						$("#addReplyBtn").on("click", function(e) {
-
-							modal.find("input").val("");
-							modalInputReplyDate.closest("div").hide();
-							modal.find("button[id !='modalCloseBtn']").hide();
-
-							modalRegisterBtn.show();
-
-							$(".modal").modal("show");
-
-						});
-
-						modalRegisterBtn.on("click", function(e) {
-
-							var reply = {
-								reply : modalInputReply.val(),
-								replyer : modalInputReplyer.val(),
-								bno : bnoValue
-							};
-							replyService.add(reply, function(result) {
-
-								alert(result);
-
-								modal.find("input").val("");
-								modal.modal("hide");
-
-								showList(1);
-
-							});
-						});
-
-						$(".chat")
-								.on(
-										"click",
-										"li",
-										function(e) {
-
-											var rno = $(this).data("rno");
-
-											replyService
-													.get(
-															rno,
-															function(reply) {
-
-																modalInputReply
-																		.val(reply.reply);
-																modalInputReplyer
-																		.val(reply.replyer);
-																modalInputReplyDate
-																		.val(
-																				replyService
-																						.displayTime(reply.replyDate))
-																		.attr(
-																				"readonly",
-																				"readonly");
-																modal
-																		.data(
-																				"rno",
-																				reply.rno);
-
-																modal
-																		.find(
-																				"button[id !='modalCloseBtn']")
-																		.hide();
-																modalModBtn
-																		.show();
-																modalRemoveBtn
-																		.show();
-
-																$(".modal")
-																		.modal(
-																				"show");
-
-															});
-										});
-
-						modalModBtn.on("click", function(e) {
-
-							var reply = {
-								rno : modal.data("rno"),
-								reply : modalInputReply.val()
-							};
-
-							replyService.update(reply, function(result) {
-
-								alert(result);
-								modal.modal("hide");
-								showList(pageNum);
-
-							});
-
-						});
-
-						modalRemoveBtn.on("click", function(e) {
-
-							var rno = modal.data("rno");
-
-							replyService.remove(rno, function(result) {
-
-								alert(result);
-								modal.modal("hide");
-								showList(pageNum);
-
-							});
-
-						});
-					});
+	});
+
+	modalRegisterBtn.on("click", function(e) {
+
+		var reply = {
+			reply : modalInputReply.val(),
+			replyer : modalInputReplyer.val(),
+			bno : bnoValue
+		};
+		replyService.add(reply, function(result) {
+
+			alert(result);
+
+			modal.find("input").val("");
+			modal.modal("hide");
+
+			showList(1);
+
+		});
+	});
+
+	$(".chat").on("click", "li", function(e) {
+
+		var rno = $(this).data("rno");
+
+		replyService.get(rno, function(reply) {
+
+			modalInputReply.val(reply.reply);
+			modalInputReplyer.val(reply.replyer);
+			modalInputReplyDate.val(replyService.displayTime(reply.replyDate)).attr("readonly","readonly");
+			modal.data("rno", reply.rno);
+			modal.find("button[id !='modalCloseBtn']").hide();
+			modalModBtn.show();
+			modalRemoveBtn.show();
+			$(".modal").modal("show");
+			
+		});
+	});
+
+	modalModBtn.on("click", function(e) {
+
+		var reply = {
+			rno : modal.data("rno"),
+			reply : modalInputReply.val()
+		};
+
+		replyService.update(reply, function(result) {
+
+			alert(result);
+			modal.modal("hide");
+			showList(pageNum);
+
+		});
+
+	});
+
+	modalRemoveBtn.on("click", function(e) {
+
+		var rno = modal.data("rno");
+
+		replyService.remove(rno, function(result) {
+
+			alert(result);
+			modal.modal("hide");
+			showList(pageNum);
+
+		});
+
+	});
+	
+	$(".uploadResult").on("click", "li", function(e){
+		
+		console.log("view image");
+		
+		var liObj = $(this);
+		var path = encodeURIComponent(liObj.data("path") + "/" + liObj.data("uuid") + "_" + liObj.data("filename"));
+		
+		if (liObj.data("type")) {
+			showImage(path.replace(new RegExp(/\\/g), "/"));
+		} else {
+			//download
+			self.location="/download?fileName="+path;
+		}
+	});
+	
+	function showImage(fileCallPath) {
+		alert(fileCallPath);
+		
+		$(".bigPictureWrapper").css("display", "flex").show();
+		$(".bigPicture")
+		.html("<img src='/display?fileName="+fileCallPath+"'>")
+		.animate({width:'100%', height: '100%'}, 1000);
+	}
+					
+	$(".bigPictureWrapper").on("click", function(e) {
+		$(".bigPicture").animate({width:'0%', height:'0%'}, 1000);
+		setTimeout(function(){
+			$('.bigPictureWrapper').hide();
+		}, 1000);
+	});
+});
 </script>
 
 <script type="text/javascript">
